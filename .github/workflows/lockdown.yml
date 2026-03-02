@@ -62,7 +62,7 @@ jobs:
             const runUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
 
             const body = [
-              `## 🔒 REPOSITORY LOCKDOWN INITIATED`,
+              `## REPOSITORY LOCKDOWN ACTIVE`,
               ``,
               `| Field       | Value |`,
               `|-------------|-------|`,
@@ -91,7 +91,7 @@ jobs:
             const issue = await github.rest.issues.create({
               owner: context.repo.owner,
               repo:  context.repo.repo,
-              title: `🔒 [LOCKDOWN] ${ts} — Initiated by @${actor}`,
+              title: `[LOCKDOWN] ${ts} — Initiated by @${actor}`,
               body,
               labels: ['lockdown', 'incident', 'security'],
             });
@@ -121,7 +121,7 @@ jobs:
           git diff --cached --quiet || git commit -m "audit: LOCKDOWN initiated by ${{ github.actor }} [skip ci]"
           git push || {
             EXIT_CODE=$?
-            echo "⚠️ Warning: Could not push lockdown audit record (exit code: $EXIT_CODE)."
+            echo "LogWarning: Could not push lockdown audit record (exit code: $EXIT_CODE)."
             echo "   This is expected when the main branch is protected and requires PRs."
             echo "   The audit entry has been committed locally but not pushed."
             exit 0
@@ -133,7 +133,7 @@ jobs:
           WEBHOOK_URL: ${{ secrets.LOCKDOWN_WEBHOOK_URL }}
         run: |
           PAYLOAD=$(jq -n \
-            --arg text "🔒 *REPOSITORY LOCKDOWN* — \`${{ github.repository }}\`\nInitiated by *${{ github.actor }}* at ${{ steps.timestamp.outputs.ts }}\nReason: ${{ github.event.inputs.reason }}\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --arg text "*REPOSITORY LOCKDOWN* — \`${{ github.repository }}\`\nInitiated by *${{ github.actor }}* at ${{ steps.timestamp.outputs.ts }}\nReason: ${{ github.event.inputs.reason }}\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
             '{text: $text}')
           curl -s -X POST "$WEBHOOK_URL" \
             -H "Content-Type: application/json" \
@@ -143,7 +143,7 @@ jobs:
       - name: Print lockdown summary
         run: |
           echo "============================================="
-          echo "  🔒 REPOSITORY LOCKDOWN INITIATED"
+          echo "  REPOSITORY LOCKDOWN INITIATED"
           echo "============================================="
           echo "  Actor   : ${{ github.actor }}"
           echo "  Time    : ${{ steps.timestamp.outputs.ts }}"
