@@ -1,8 +1,6 @@
-# 🔒 Secure Repository
+# Test Repository
 
-A hardened repository for housing **confidential files**. Every action taken in this
-repository is monitored, validated, and logged. Unauthorized access or disclosure is
-strictly prohibited.
+Hello and welcome to my test repository! This is where I experiment with various Github security features such as security checks, audit logs etc. See below for more details. You can fork this repo to experiment with to your liking
 
 ---
 
