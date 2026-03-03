@@ -128,7 +128,7 @@ jobs:
           }
 
       - name: Send email notification
-        if: github.event.inputs.notify_email == 'true' && secrets.MAIL_SERVER != ''
+        if: github.event.inputs.notify_email == 'true' && secrets.MAIL_SERVER != '' && secrets.MAIL_PORT != '' && secrets.MAIL_USERNAME != '' && secrets.MAIL_PASSWORD != ''
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.MAIL_SERVER }}
