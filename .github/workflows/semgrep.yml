@@ -1,0 +1,63 @@
+name: Semgrep SAST
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    # Weekly on Monday at 03:00 UTC
+    - cron: "0 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  semgrep:
+    name: Semgrep Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Semgrep
+        run: pip install semgrep
+
+      - name: Run Semgrep (SAST + secrets + GitHub Actions rules)
+        id: semgrep
+        # Exit code 1 means findings were found; we still want to upload SARIF
+        continue-on-error: true
+        run: |
+          semgrep \
+            --config=p/security-audit \
+            --config=p/secrets \
+            --config=p/github-actions \
+            --sarif \
+            --output=semgrep.sarif \
+            .
+
+      - name: Upload SARIF results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: semgrep.sarif
+
+      - name: Fail if high-severity findings were detected
+        if: steps.semgrep.outcome == 'failure'
+        run: |
+          echo "❌ Semgrep detected security issues. Review the Security tab for details."
+          exit 1
