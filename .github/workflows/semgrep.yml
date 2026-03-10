@@ -36,7 +36,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install Semgrep
-        run: pip install semgrep
+        run: pip install semgrep==1.93.0
 
       - name: Run Semgrep (SAST + secrets + GitHub Actions rules)
         id: semgrep
